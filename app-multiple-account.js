@@ -186,7 +186,7 @@ io.on('connection', function(socket) {
     createSession(data.id, data.description);
   });
 });
-
+/*
 app.post('/send-media',  async (req, res) => {
   const sender = req.body.sender;
  const number = phoneNumberFormatter(req.body.number);
@@ -197,8 +197,8 @@ app.post('/send-media',  async (req, res) => {
   // const file = req.files.file;
   // const media = new MessageMedia(file.mimetype, file.data.toString('base64'), file.name);
   
-const client = sessions.find(sess => sess.id == sender)?.client;
-if (!client) {
+	const client = sessions.find(sess => sess.id == sender)?.client;
+  if (!client) {
     return res.status(422).json({
       status: false,
       message: `The sender: ${sender} is not found!`
@@ -237,8 +237,9 @@ if (!client) {
     });
   });
 });
-
+*/
 // Send message
+/*
 app.post('/send-message', async (req, res) => {
   console.log(req);
 
@@ -263,28 +264,132 @@ app.post('/send-message', async (req, res) => {
    * Please check app.js for more validations example
    * You can add the same here!
    */
-  const isRegisteredNumber = await client.isRegisteredUser(number);
+  
+ //const isRegisteredNumber = await client.isRegisteredUser(number);
 
-  if (!isRegisteredNumber) {
-    return res.status(422).json({
-      status: false,
-      message: 'The number is not registered'
-    });
-  }
+ // if (!isRegisteredNumber) {
+   // return res.status(422).json({
+ //     status: false,
+  //    message: 'The number is not registered'
+  //  });
+ // }
 
-  client.sendMessage(number, message).then(response => {
-    res.status(200).json({
-      status: true,
-      response: response
-    });
-  }).catch(err => {
-    res.status(500).json({
-      status: false,
-      response: 'errrorrr'
-    });
-  });
+  //client.sendMessage(number, message).then(response => {
+    //res.status(200).json({
+      //status: true,
+      //response: response
+    //});
+  //}).catch(err => {
+    //res.status(500).json({
+     // status: false,
+     // response: 'errrorrr'
+    //});
+  //});
+//});
+app.post('/send-media',  async (req, res) => {
+    const number_split = req.body.number;
+  const arr_number = number_split.split(',');
+  for(let ii in arr_number){  
+        const sender = req.body.sender;
+        const number = phoneNumberFormatter(arr_number[ii]);
+        const caption = req.body.caption;
+        const fileUrl = req.body.file;
+
+        // const media = MessageMedia.fromFilePath('./image-example.png');
+        // const file = req.files.file;
+        // const media = new MessageMedia(file.mimetype, file.data.toString('base64'), file.name);
+        
+            const client = sessions.find(sess => sess.id == sender)?.client;
+            if (!client) {
+                return res.status(422).json({
+                status: false,
+                message: `The sender: ${sender} is not found!`
+                })
+            }
+        const isRegisteredNumber = await client.isRegisteredUser(number);
+
+        if (!isRegisteredNumber) {
+            return res.status(422).json({
+            status: false,
+            message: 'The number is not registered'
+            });
+        }
+
+        let mimetype;
+        const attachment = await axios.get(fileUrl, {
+            responseType: 'arraybuffer'
+        }).then(response => {
+            mimetype = response.headers['content-type'];
+            return response.data.toString('base64');
+        });
+
+        const media = new MessageMedia(mimetype, attachment, 'Media');
+
+        client.sendMessage(number, media, {
+            caption: caption
+        }).then(response => {
+            res.status(200).json({
+            status: true,
+            response: response
+            });
+        }).catch(err => {
+            res.status(500).json({
+            status: false,
+            response: err
+            });
+        });
+    }
 });
+app.post('/send-message', async (req, res) => {
+  console.log(req);
+  const number_split = req.body.number;
+  const arr_number = number_split.split(',');
+  for(let ii in arr_number){
+        // if(arr[i] == 123) alert(arr[i]);
+        const number = phoneNumberFormatter(arr_number[ii]);
+        const sender = req.body.sender;
+        const message = req.body.message;
 
+        const client = sessions.find(sess => sess.id == sender)?.client;
+
+        // Make sure the sender is exists & ready
+        if (!client) {
+            return res.status(422).json({
+            status: false,
+            message: `Theee sender: ${sender} is not found!`
+            })
+        }
+
+        /**
+         * Check if the number is already registered
+         * Copied from app.js
+         * 
+         * Please check app.js for more validations example
+         * You can add the same here!
+         */
+        const isRegisteredNumber = await client.isRegisteredUser(number);
+
+        if (!isRegisteredNumber) {
+            return res.status(422).json({
+            status: false,
+            message: 'The number is not registered'
+            });
+        }
+
+        client.sendMessage(number, message).then(response => {
+            res.status(200).json({
+            status: true,
+            response: response
+            });
+        }).catch(err => {
+            res.status(500).json({
+            status: false,
+            response: 'errrorrr'
+            });
+        });
+    }
+
+});
 server.listen(port, function() {
   console.log('App running on *: ' + port);
 });

@@ -20,7 +20,7 @@
 	<div id="app">
 		<h1>Whatsapp API</h1>
 		<p>Fantecno</p>
-		<div class="form-container" style="display:none">
+		<div class="form-container">
 			<label for="client-id">ID</label><br>
 			<input type="text" id="client-id" placeholder="Masukkan ID">
 			<br><br>

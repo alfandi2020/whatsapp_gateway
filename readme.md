@@ -58,3 +58,7 @@ And we decided (for this example) to use time as the filename, because the media
 ## Support Me
 
 You can make a support for this work by [DONATING](./DONATE.md). Thank you.
+
+
+##BUG Bug Cannot read properties of undefined (reading 'queryExists') ##
+https://github.com/pedroslopez/whatsapp-web.js/issues/1985

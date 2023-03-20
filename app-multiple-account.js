@@ -367,15 +367,16 @@ app.post('/send-message', async (req, res) => {
          * Please check app.js for more validations example
          * You can add the same here!
          */
+	
         const isRegisteredNumber = await client.isRegisteredUser(number);
-
+	/*
         if (!isRegisteredNumber) {
             return res.status(422).json({
             status: false,
             message: 'The number is not registered'
             });
         }
-
+	*/
         client.sendMessage(number, message).then(response => {
             res.status(200).json({
             status: true,
